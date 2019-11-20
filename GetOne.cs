@@ -10,7 +10,7 @@ namespace HuntingSpots
     {
         [FunctionName("GetOne")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "api/GetOne/{rowKey?}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetOne/{rowKey?}")] HttpRequest req,
             [Table("Spots", Spot.PARTITION_KEY, "{rowKey}")] Spot spot,
             string rowKey,
             ILogger log)

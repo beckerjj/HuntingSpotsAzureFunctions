@@ -14,7 +14,7 @@ namespace HuntingSpots
     {
         [FunctionName("Create")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "api/create")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "create")] HttpRequest req,
             [Table("Spots", Connection = "AzureWebJobsStorage")] IAsyncCollector<Spot> spotTable,
             ILogger log)
         {

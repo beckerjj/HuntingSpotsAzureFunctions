@@ -15,7 +15,7 @@ namespace HuntingSpots
     {
         [FunctionName("Get")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "api/Get")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Get")] HttpRequest req,
             [Table("Spots")] CloudTable table,
             ILogger log)
         {
