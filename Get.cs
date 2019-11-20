@@ -7,27 +7,24 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.WindowsAzure.Storage.Table;
 
-namespace HuntingSpots.Get
+namespace HuntingSpots
 {
     public static class Get
     {
         [FunctionName("Get")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "api/Get")] HttpRequest req,
+            [Table("Spots")] CloudTable table,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            var tableQuerySegment = await table.ExecuteQuerySegmentedAsync(new TableQuery<Spot>(), null);
+            var spots = tableQuerySegment.Results;
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            return new JsonResult(spots);
         }
     }
 }
