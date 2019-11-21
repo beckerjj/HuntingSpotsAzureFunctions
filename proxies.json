@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json.schemastore.org/proxies",
+    "proxies": {
+        "proxyApi": {
+            "matchCondition": {
+                "route": "/api/{*restOfPath}"
+            },
+            "backendUri": "https://localhost/api/{restOfPath}"
+        },
+        "proxyStaticPages": {
+            "matchCondition": {
+                "methods": [ "GET" ],
+                "route": "/{*restOfPath}"
+            },
+            "backendUri": "%StaticFileOrigin%/{restOfPath}"
+        }
+    }
+}

@@ -7,14 +7,15 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace HuntingSpots
 {
-    public static class Create
+    public static class CreateMany
     {
-        [FunctionName("Create")]
+        [FunctionName("CreateMany")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "create")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "createMany")] HttpRequest req,
             [Table("Spots", Connection = "AzureWebJobsStorage")] IAsyncCollector<Spot> spotTable,
             ILogger log)
         {
@@ -23,14 +24,17 @@ namespace HuntingSpots
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var spot = JsonConvert.DeserializeObject<Spot>(requestBody);
-                spot.RowKey = Guid.NewGuid().ToString();
+                var spots = JsonConvert.DeserializeObject<List<Spot>>(requestBody);
 
-                log.LogInformation($"Creating:\r\n{JsonConvert.SerializeObject(spot, Formatting.Indented)}");
+                foreach(var spot in spots)
+                {
+                    spot.RowKey = Guid.NewGuid().ToString();
+                    
+                    log.LogInformation($"Creating:\r\n{JsonConvert.SerializeObject(spot, Formatting.Indented)}");
 
-                await spotTable.AddAsync(spot);
+                    await spotTable.AddAsync(spot);
+                }
 
-                //return (ActionResult)new CreatedResult($"Created spot with id spot.Id");
                 return new NoContentResult();
             }
             catch (Exception ex)
